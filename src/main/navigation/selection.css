@@ -1,0 +1,11 @@
+
+.selection {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 60px;
+}
+
+.selection select{
+	max-width: 150px;
+	margin: 20px 0;
+}

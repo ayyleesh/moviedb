@@ -1,0 +1,21 @@
+.search-button {
+  display: flex;
+  justify-content: center;
+}
+.search-button button {
+  padding: 10px 21px;
+  background: #e27a3f;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease-out;
+  border: solid 2px #e27a3f;
+  border-radius: 3px;
+}
+
+.search-button button:hover {
+  background: white;
+  color: #e27a3f;
+  transition: 0.2s ease-out;
+  border: solid 2px #e27a3f;
+}

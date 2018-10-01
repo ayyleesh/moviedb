@@ -4,14 +4,120 @@ import Navigation from "./navigation/navigation";
 import Movies from "./movies/movies";
 
 class Main extends React.Component{
-	render(){
-		return(
-			<section className="main">
-				<Navigation />
-				<Movies />
-			</section>
-		)
+	/**/
+	state = {
+    movies: [],
+    total_pages: 1,
+    page: 1,
+    url: `https://api.themoviedb.org/3/genre/movie/list?api_key=651925d45022d1ae658063b443c99784&language=en-US`,
+    moviesUrl: `https://api.themoviedb.org/3/discover/movie?api_key=651925d45022d1ae658063b443c99784&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1`,
+    genre: "Comedy",
+    genres: [],
 	}
+
+	componentDidMount(){
+    this.fetchMovies(this.state.moviesUrl);
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (this.state.moviesUrl !== nextState.moviesUrl) {
+      this.fetchMovies(nextState.moviesUrl);
+    }
+    if (this.state.page !== nextState.page) {
+      this.generateUrl();
+    }
+  }
+
+  onGenreChange = event => {
+    this.setState({ genre: event.target.value });
+  }
+
+  setGenres = genres => {
+    this.setState({genres});
+  }
+
+  onChange = data => {
+    this.setState({
+      [data.type]: {
+        ...this.state[data.type],
+        value: data.value
+      }
+    });
+  };
+
+  generateUrl = () => {
+    const {genres, year, rating, runtime, page } = this.state;
+    const selectedGenre = genres.find( genre => genre.name === this.state.genre);
+    const genreId = selectedGenre.id;
+
+    const moviesUrl = `https://api.themoviedb.org/3/discover/movie?` +
+      `api_key=651925d45022d1ae658063b443c99784&` +
+      `language=en-US&sort_by=popularity.desc&` +
+      `with_genres=${genreId}&` +
+      `page=${page}`;
+
+    this.setState({ moviesUrl });
+  }
+
+  onSearchButtonClick = () => {
+    this.setState({page: 1});
+    this.generateUrl();
+  }
+
+  fetchMovies = (url) => {
+    fetch(url)
+      .then(response => response.json())
+      .then(data => this.storeMovies(data))
+      .catch(error => console.log(error));
+  }
+
+  storeMovies = data => {
+    const movies = data.results.map(result => {
+      const {
+        vote_count,
+        id,
+        genre_ids,
+        poster_path,
+        title,
+        vote_average,
+        release_date
+      } = result;
+      return { vote_count, id, genre_ids, poster_path, title, vote_average, release_date };
+    });
+    this.setState({ movies, total_pages: data.total_pages });
+  };
+
+  onPageIncrease = () => {
+    const { page, total_pages } = this.state
+    const nextPage = page + 1;
+    if (nextPage <= total_pages) {
+      this.setState({ page: nextPage })
+    }
+  }
+
+  onPageDecrease = () => {
+    const nextPage = this.state.page - 1;
+    if ( nextPage > 0 ) {
+      this.setState({ page: nextPage })
+    }
+  }
+	render() {
+    return (
+			<section className="main">
+        <Navigation
+          onGenreChange={this.onGenreChange}
+          setGenres={this.setGenres}
+          onSearchButtonClick={this.onSearchButtonClick}
+          {...this.state} />
+        <Movies
+          movies={this.state.movies}
+          page={this.state.page}
+          onPageIncrease={this.onPageIncrease}
+          onPageDecrease={this.onPageDecrease}
+        />
+      </section>
+    )
+  }
 }
 
 export default Main;
