@@ -18,8 +18,8 @@ class Movies extends React.Component{
 
 	storeMovies = data =>{
 		const movies = data.results.map( result =>{
-			const {vote_count, id, genre_ids, poster_path, title, release_date} = result;
-			return {vote_count, id, genre_ids, poster_path, title, release_date};
+			const {vote_count, id, genre_ids, poster_path, title, release_date, vote_average} = result;
+			return {vote_count, id, genre_ids, poster_path, title, release_date, vote_average};
 		});
 
 		this.setState({ movies });
