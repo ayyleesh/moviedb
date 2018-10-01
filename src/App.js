@@ -21,15 +21,19 @@ class App extends Component {
 export default App;
 */
 
-import React from 'react';
+import React from "react";
+import Header from "./header/header";
+import Main from "./main/main";
 
 const App = () => {
   console.log('API key:', process.env.REACT_APP_TMDB_API_KEY);
   return (
     <div>
-      <h1>Movie Database</h1>
+      <Header />
+      <Main />
     </div>
-  )
-}
+    );
+};
 
 export default App;
+
