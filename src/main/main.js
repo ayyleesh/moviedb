@@ -30,18 +30,25 @@ class Main extends React.Component{
 		.catch(error => console.log(error))
 	}
 
-	componentDidMount() {
-		this.fetchMovies(this.state.moviesUrl);
-	}
+	componentDidMount(){
+  const savedState = this.getStateFromLocalStorage();
+  if ( !savedState || (savedState && !savedState.movies.length)) {
+    this.fetchMovies(this.state.moviesUrl);
+  } else {
+    this.setState({ ...savedState });
+    this.generateUrl(savedState);
+  }
+}
 
-	componentWillUpdate(nextProps, nextState) {
-		if (this.state.moviesUrl !== nextState.moviesUrl) {
-			this.fetchMovies(nextState.moviesUrl);
-		}
-		if (this.state.page !== nextState.page) {
-			this.generateUrl();
-		}
-	}
+componentWillUpdate(nextProps, nextState) {
+this.saveStateToLocalStorage();
+if (this.state.moviesUrl !== nextState.moviesUrl) {
+	this.fetchMovies(nextState.moviesUrl);
+}
+if (this.state.page !== nextState.page) {
+	this.generateUrl();
+}
+}
 
 	storeMovies = data =>{
 		const movies = data.results.map( result =>{
@@ -55,22 +62,22 @@ class Main extends React.Component{
 		});
 	};
 
-	generateUrl = () =>{
-		const {genres, page } = this.state;
-    const selectedGenre = genres.find( genre => genre.name === this.state.genre);
-    const genreId = selectedGenre.id;
-
+	generateUrl = params => {
+		const {id, genres, page } = params;
+		const selectedGenre = genres.find( genre => genre.name === params.genre);
+		const genreId = selectedGenre.id;
 		const moviesUrl = `https://api.themoviedb.org/3/discover/movie?` +
-      `api_key=${process.env.REACT_APP_TMDB_API_KEY}&` +
-			`language=en-US&sort_by=popularity.desc&` +
-			`with_genres=${genreId}&` +
-			`page=${page}`;
+		`api_key=${process.env.REACT_APP_TMDB_API_KEY}&` +
+		`language=en-US&sort_by=popularity.desc&` +
+		`with_genres=${genreId}&` +
+		`page=${page}`;
 
 		this.setState({moviesUrl});
 	}
 
 	onSearchButtonClick = () => {
-		this.generateUrl();
+		this.setState({page: 1});
+		this.generateUrl(this.state);
 	}
 
 	onPageIncrease = () => {
@@ -87,6 +94,14 @@ class Main extends React.Component{
 			this.setState({page: nextPage});
 		}
 	}
+	
+		saveStateToLocalStorage = () => {
+			localStorage.setItem("moviedb.params", JSON.stringify(this.state));
+		}
+
+		getStateFromLocalStorage = () => {
+			return JSON.parse(localStorage.getItem("moviedb.params"));
+		}
 
 	render() {
     return (
