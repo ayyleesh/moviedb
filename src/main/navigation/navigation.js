@@ -1,7 +1,7 @@
 import React from "react";
 import "./navigation.css";
 import Selection from "./selection.js"
-import SearchButton from "./searchbutton.js"
+import Button from "./button.js"
 
 class Navigation extends React.Component {
 		componentDidMount(){
@@ -19,7 +19,7 @@ class Navigation extends React.Component {
         	genre = {genre}
         	genres = {genres}
         	onGenreChange = {onGenreChange}/>
-				<SearchButton onClick={onSearchButtonClick}>search</SearchButton> 
+				<Button onClick={onSearchButtonClick}>Search</Button>
       </section>
     )
   }
